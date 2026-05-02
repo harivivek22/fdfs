@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First Day First Show</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c518;
+    --gold-dim: #c49a10;
+    --red: #e63946;
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1c1c28;
+    --border: rgba(245,197,24,0.15);
+    --text: #f0e8d0;
+    --muted: #7a7060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND */
+  .bg-pattern {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,197,24,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(230,57,70,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .title-italic {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    display: block;
+    line-height: 1;
+  }
+  .title-main {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: #fff;
+    letter-spacing: 0.04em;
+    display: block;
+    line-height: 1.1;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  /* SCREENS */
+  .screen { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; flex: 1; }
+  .screen.active { display: flex; }
+
+  /* HOME */
+  .home-actions { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 360px; margin-top: 2.5rem; }
+  .btn-primary {
+    background: var(--gold);
+    color: #0a0a0f;
+    border: none;
+    padding: 1rem 2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  .btn-primary:hover { background: #ffd700; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.35); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 1rem 2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  .btn-secondary:hover { background: rgba(245,197,24,0.08); }
+
+  .or-divider { text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.2em; }
+
+  /* LOBBY */
+  .lobby-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    width: 100%;
+    max-width: 460px;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .lobby-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.75rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+  .form-group select option { background: var(--surface2); }
+  .btn-full { width: 100%; margin-top: 0.5rem; }
+
+  /* ROOM CODE DISPLAY */
+  .room-code-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold);
+    padding: 1.5rem;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+  .room-code-label { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .room-code { font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--gold); letter-spacing: 0.3em; }
+
+  /* WAITING ROOM */
+  .waiting-screen { width: 100%; max-width: 560px; }
+  .players-list { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; margin: 1.5rem 0; }
+  .players-list h3 { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .player-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600; font-size: 1.05rem;
+  }
+  .player-item:last-child { border-bottom: none; }
+  .player-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
+  .host-badge {
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--gold); color: #000; padding: 2px 6px; margin-left: auto;
+  }
+
+  /* GAME SCREEN */
+  .game-top {
+    width: 100%; max-width: 900px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .progress-bar-wrap { flex: 1; height: 4px; background: var(--surface2); max-width: 300px; }
+  .progress-bar { height: 100%; background: var(--gold); transition: width 0.3s; }
+  .round-info { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .score-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .score-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem; font-weight: 600;
+  }
+  .score-chip span { color: var(--gold); }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    letter-spacing: 0.02em;
+  }
+  .question-text strong { color: var(--text); }
+
+  /* MOVIE CARDS */
+  .movies-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    width: 100%; max-width: 860px;
+    align-items: center;
+  }
+  .vs-badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 0.5rem;
+  }
+  .movie-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    position: relative;
+  }
+  .movie-card:hover:not(.disabled) {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(245,197,24,0.2);
+  }
+  .movie-card.disabled { cursor: default; }
+  .movie-card.correct { border-color: #22c55e; box-shadow: 0 0 30px rgba(34,197,94,0.3); }
+  .movie-card.wrong { border-color: var(--red); box-shadow: 0 0 30px rgba(230,57,70,0.3); }
+  .movie-card.reveal-correct { border-color: #22c55e; }
+
+  .movie-poster {
+    width: 100%; aspect-ratio: 2/3; object-fit: cover;
+    display: block;
+    background: var(--surface2);
+  }
+  .movie-poster-placeholder {
+    width: 100%; aspect-ratio: 2/3;
+    background: linear-gradient(135deg, var(--surface2) 0%, #1e1e2e 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; color: var(--gold);
+  }
+  .movie-info { padding: 1rem; }
+  .movie-title { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 700; }
+  .movie-year {
+    font-size: 0.85rem; color: var(--gold); margin-top: 0.25rem; font-weight: 600;
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .movie-year.visible { opacity: 1; }
+  .result-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .result-overlay.visible { opacity: 1; }
+  .correct .result-overlay { background: rgba(34,197,94,0.15); }
+  .wrong .result-overlay { background: rgba(230,57,70,0.15); }
+  .reveal-correct .result-overlay { background: rgba(34,197,94,0.1); }
+
+  /* RESULT BANNER */
+  .result-banner {
+    margin-top: 1.5rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0; transition: opacity 0.3s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+  .result-banner.visible { opacity: 1; }
+  .result-banner.correct-banner { background: rgba(34,197,94,0.15); border: 1px solid #22c55e; color: #22c55e; }
+  .result-banner.wrong-banner { background: rgba(230,57,70,0.15); border: 1px solid var(--red); color: var(--red); }
+
+  /* SCOREBOARD */
+  .scoreboard {
+    width: 100%; max-width: 520px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2rem;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .scoreboard h2 {
+    font-family: 'Playfair Display', serif; font-size: 2rem;
+    color: var(--gold); text-align: center; margin-bottom: 0.25rem;
+  }
+  .scoreboard-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2rem; }
+  .score-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+  }
+  .score-rank { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--border); min-width: 2.5rem; }
+  .score-rank.gold { color: var(--gold); }
+  .score-rank.silver { color: #aaa; }
+  .score-rank.bronze { color: #cd7f32; }
+  .score-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
+  .score-pts { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); }
+
+  /* JOIN ROOM */
+  .join-card { width: 100%; max-width: 400px; }
+  .code-input {
+    text-align: center;
+    font-size: 2rem !important;
+    letter-spacing: 0.4em !important;
+    font-family: 'Playfair Display', serif !important;
+    text-transform: uppercase;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: var(--surface2); border: 1px solid var(--gold);
+    padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 600;
+    letter-spacing: 0.05em; z-index: 999;
+    opacity: 0; transition: opacity 0.3s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    white-space: nowrap;
+  }
+  .toast.visible { opacity: 1; }
+
+  /* TIMER */
+  .timer-ring { position: relative; width: 60px; height: 60px; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring circle { fill: none; stroke-width: 4; }
+  .timer-ring .bg { stroke: var(--surface2); }
+  .timer-ring .fg { stroke: var(--gold); stroke-dasharray: 163; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .timer-ring .fg.danger { stroke: var(--red); }
+  .timer-num {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700;
+  }
+
+  .back-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.5rem; margin-top: 1rem;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--text); }
+
+  .waiting-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+  /* Solo play badge */
+  .solo-badge {
+    background: rgba(245,197,24,0.1); border: 1px solid var(--border);
+    padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .movies-grid { grid-template-columns: 1fr; }
+    .vs-badge { display: none; }
+    .game-top { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="app">
+  <header>
+    <span class="title-italic">First Day</span>
+    <span class="title-main">First Show</span>
+    <p class="subtitle">The Ultimate Telugu Release Date Challenge</p>
+  </header>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="home-actions">
+      <button class="btn-primary" onclick="showScreen('screen-create')">🎬 Create Room</button>
+      <div class="or-divider">— or —</div>
+      <button class="btn-secondary" onclick="showScreen('screen-join')">🔑 Join Room</button>
+      <div class="or-divider">— or —</div>
+      <button class="btn-secondary" onclick="startSolo()">⚡ Play Solo</button>
+    </div>
+  </div>
+
+  <!-- CREATE ROOM -->
+  <div class="screen" id="screen-create">
+    <div class="lobby-card">
+      <h2>Create Room</h2>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="host-name" placeholder="Enter your name" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label>Number of Rounds</label>
+        <select id="rounds-count">
+          <option value="5">5 Rounds</option>
+          <option value="10" selected>10 Rounds</option>
+          <option value="15">15 Rounds</option>
+          <option value="20">20 Rounds</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Time per Round</label>
+        <select id="time-per-round">
+          <option value="10">10 seconds</option>
+          <option value="15" selected>15 seconds</option>
+          <option value="20">20 seconds</option>
+          <option value="30">30 seconds</option>
+        </select>
+      </div>
+      <button class="btn-primary btn-full" onclick="createRoom()">Create Room</button>
+      <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+    </div>
+  </div>
+
+  <!-- JOIN ROOM -->
+  <div class="screen" id="screen-join">
+    <div class="lobby-card join-card">
+      <h2>Join Room</h2>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="join-name" placeholder="Enter your name" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label>Room Code</label>
+        <input type="text" id="join-code" class="code-input" placeholder="XXXX" maxlength="4">
+      </div>
+      <button class="btn-primary btn-full" onclick="joinRoom()">Join Room</button>
+      <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+    </div>
+  </div>
+
+  <!-- WAITING ROOM -->
+  <div class="screen" id="screen-waiting">
+    <div class="waiting-screen">
+      <div class="room-code-box">
+        <div class="room-code-label">Room Code — Share with friends</div>
+        <div class="room-code" id="display-room-code">----</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">Click to copy</div>
+      </div>
+      <div class="players-list">
+        <h3>Players <span id="player-count">(1)</span></h3>
+        <div id="players-list-items"></div>
+      </div>
+      <div style="font-size:0.8rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;text-align:center">
+        <span id="rounds-label">10</span> Rounds · <span id="time-label">15</span>s per Round
+      </div>
+      <div class="waiting-actions">
+        <button class="btn-primary" id="start-btn" onclick="startGame()">Start Game</button>
+        <button class="btn-secondary" onclick="addBotPlayer()">+ Add Bot</button>
+      </div>
+      <button class="back-btn" onclick="showScreen('screen-home')">← Leave Room</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div class="game-top">
+      <div class="round-info">Round <span id="current-round">1</span> / <span id="total-rounds">10</span></div>
+      <div class="timer-ring" id="timer-ring">
+        <svg width="60" height="60" viewBox="0 0 60 60">
+          <circle class="bg" cx="30" cy="30" r="26"/>
+          <circle class="fg" id="timer-circle" cx="30" cy="30" r="26" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-num" id="timer-num">15</div>
+      </div>
+      <div class="score-chips" id="score-chips"></div>
+    </div>
+
+    <div class="question-text"><strong>Which movie released EARLIER?</strong></div>
+
+    <div class="movies-grid">
+      <div class="movie-card" id="card-a" onclick="guess('a')">
+        <div class="movie-poster-placeholder" id="poster-a">🎬</div>
+        <div class="result-overlay" id="overlay-a"></div>
+        <div class="movie-info">
+          <div class="movie-title" id="title-a">Movie A</div>
+          <div class="movie-year" id="year-a"></div>
+        </div>
+      </div>
+      <div class="vs-badge">vs</div>
+      <div class="movie-card" id="card-b" onclick="guess('b')">
+        <div class="movie-poster-placeholder" id="poster-b">🎬</div>
+        <div class="result-overlay" id="overlay-b"></div>
+        <div class="movie-info">
+          <div class="movie-title" id="title-b">Movie B</div>
+          <div class="movie-year" id="year-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-banner" id="result-banner"></div>
+    <div class="solo-badge" id="solo-indicator" style="display:none">Solo Mode</div>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="screen" id="screen-score">
+    <div class="scoreboard">
+      <h2>Results</h2>
+      <div class="scoreboard-subtitle">Game Over — Final Scores</div>
+      <div id="score-list"></div>
+      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+        <button class="btn-primary" style="flex:1" onclick="playAgain()">Play Again</button>
+        <button class="btn-secondary" style="flex:1" onclick="showScreen('screen-home')">Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== MOVIE DATA ====================
+const MOVIES = [
+  { title: "Magadheera", year: 2009, month: 7 },
+  { title: "Eega", year: 2012, month: 7 },
+  { title: "Baahubali: The Beginning", year: 2015, month: 7 },
+  { title: "Baahubali 2: The Conclusion", year: 2017, month: 4 },
+  { title: "Arjun Reddy", year: 2017, month: 8 },
+  { title: "Rangasthalam", year: 2018, month: 3 },
+  { title: "Geetha Govindam", year: 2018, month: 8 },
+  { title: "Maharshi", year: 2019, month: 5 },
+  { title: "Jersey", year: 2019, month: 4 },
+  { title: "Sarileru Neekevvaru", year: 2020, month: 1 },
+  { title: "Ala Vaikunthapurramuloo", year: 2020, month: 1 },
+  { title: "Vakeel Saab", year: 2021, month: 4 },
+  { title: "Pushpa: The Rise", year: 2021, month: 12 },
+  { title: "RRR", year: 2022, month: 3 },
+  { title: "Bheemla Nayak", year: 2022, month: 2 },
+  { title: "Vikram Vedha", year: 2022, month: 9 },
+  { title: "Dasara", year: 2023, month: 3 },
+  { title: "Kisi Ka Bhai Kisi Ki Jaan", year: 2023, month: 4 },
+  { title: "Skanda", year: 2023, month: 9 },
+  { title: "Salaar", year: 2023, month: 12 },
+  { title: "Guntur Kaaram", year: 2024, month: 1 },
+  { title: "HanuMan", year: 2024, month: 1 },
+  { title: "Tillu Square", year: 2024, month: 3 },
+  { title: "Devara", year: 2024, month: 9 },
+  { title: "Pushpa 2: The Rule", year: 2024, month: 12 },
+  { title: "Saindhav", year: 2024, month: 1 },
+  { title: "Eagle", year: 2024, month: 1 },
+  { title: "Bhimaa", year: 2024, month: 3 },
+  { title: "Double iSmart", year: 2024, month: 8 },
+  { title: "Saripodhaa Sanivaaram", year: 2024, month: 8 },
+  { title: "Akhanda", year: 2021, month: 12 },
+  { title: "Manamey", year: 2024, month: 6 },
+  { title: "Karthikeya 2", year: 2022, month: 8 },
+  { title: "Bimbisara", year: 2022, month: 8 },
+  { title: "Waltair Veerayya", year: 2023, month: 1 },
+  { title: "Veera Simha Reddy", year: 2023, month: 1 },
+  { title: "Nannaku Prematho", year: 2016, month: 1 },
+  { title: "Janatha Garage", year: 2016, month: 9 },
+  { title: "Fidaa", year: 2017, month: 7 },
+  { title: "Agnyaathavaasi", year: 2018, month: 1 },
+  { title: "F2: Fun and Frustration", year: 2019, month: 1 },
+  { title: "Bro Daddy", year: 2022, month: 1 },
+  { title: "Uppena", year: 2021, month: 2 },
+  { title: "Sita Ramam", year: 2022, month: 8 },
+  { title: "Hridayam", year: 2022, month: 1 },
+  { title: "DJ Tillu", year: 2022, month: 2 },
+  { title: "Virupaksha", year: 2023, month: 5 },
+  { title: "Bhola Shankar", year: 2023, month: 8 },
+  { title: "Tiger Nageswara Rao", year: 2023, month: 10 },
+  { title: "Naa Saami Ranga", year: 2024, month: 1 },
+];
+
+// ==================== STATE ====================
+let state = {
+  mode: 'solo', // 'solo' | 'host' | 'guest'
+  roomCode: '',
+  playerName: '',
+  players: [], // [{name, score, isHost}]
+  rounds: 10,
+  timePerRound: 15,
+  currentRound: 0,
+  pairs: [],
+  answered: false,
+  timerInterval: null,
+  timeLeft: 15,
+  soloScore: 0,
+};
+
+const BOTS = ["Prabhas Bot", "Allu Arjun Bot", "Mahesh Bot", "Jr NTR Bot", "Vijay Devarakonda Bot"];
+let botIdx = 0;
+
+// ==================== UTILS ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), duration);
+}
+
+function genCode() {
+  return Math.random().toString(36).substring(2, 6).toUpperCase();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function genPairs(count) {
+  const pool = shuffle(MOVIES);
+  const pairs = [];
+  for (let i = 0; i < count * 2 && i + 1 < pool.length; i += 2) {
+    const a = pool[i], b = pool[i + 1];
+    if (a.year === b.year && a.month === b.month) {
+      i--; continue; // skip same release
+    }
+    pairs.push({ a, b });
+  }
+  return pairs.slice(0, count);
+}
+
+function movieDate(m) { return m.year * 100 + m.month; }
+
+// ==================== ROOM LOGIC ====================
+function createRoom() {
+  const name = document.getElementById('host-name').value.trim();
+  if (!name) { showToast('Enter your name!'); return; }
+  state.playerName = name;
+  state.rounds = parseInt(document.getElementById('rounds-count').value);
+  state.timePerRound = parseInt(document.getElementById('time-per-round').value);
+  state.roomCode = genCode();
+  state.mode = 'host';
+  state.players = [{ name, score: 0, isHost: true }];
+  state.pairs = genPairs(state.rounds);
+
+  document.getElementById('display-room-code').textContent = state.roomCode;
+  document.getElementById('rounds-label').textContent = state.rounds;
+  document.getElementById('time-label').textContent = state.timePerRound;
+  renderPlayers();
+  showScreen('screen-waiting');
+
+  // Click to copy
+  document.getElementById('display-room-code').onclick = () => {
+    navigator.clipboard.writeText(state.roomCode).then(() => showToast('Room code copied!'));
+  };
+}
+
+function joinRoom() {
+  const name = document.getElementById('join-name').value.trim();
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (!name) { showToast('Enter your name!'); return; }
+  if (code.length !== 4) { showToast('Enter a 4-letter room code!'); return; }
+
+  // Simulate joining - in a real app this would connect to a server
+  // For demo: if code matches current room, join it; otherwise create a simulated room
+  state.playerName = name;
+  state.mode = 'guest';
+
+  if (state.roomCode === code && state.players.length > 0) {
+    // Join existing room
+    state.players.push({ name, score: 0, isHost: false });
+  } else {
+    // Simulate a room
+    state.roomCode = code;
+    state.rounds = 10;
+    state.timePerRound = 15;
+    state.pairs = genPairs(state.rounds);
+    state.players = [
+      { name: 'Host Player', score: 0, isHost: true },
+      { name, score: 0, isHost: false },
+    ];
+  }
+
+  document.getElementById('display-room-code').textContent = state.roomCode;
+  document.getElementById('rounds-label').textContent = state.rounds;
+  document.getElementById('time-label').textContent = state.timePerRound;
+  document.getElementById('start-btn').style.display = 'none'; // guests can't start
+  renderPlayers();
+  showScreen('screen-waiting');
+  showToast(`Joined room ${code}!`);
+}
+
+function addBotPlayer() {
+  const bot = BOTS[botIdx % BOTS.length];
+  botIdx++;
+  if (state.players.find(p => p.name === bot)) { addBotPlayer(); return; }
+  state.players.push({ name: bot, score: 0, isHost: false, isBot: true });
+  renderPlayers();
+  showToast(`${bot} joined!`);
+}
+
+function renderPlayers() {
+  document.getElementById('player-count').textContent = `(${state.players.length})`;
+  const list = document.getElementById('players-list-items');
+  list.innerHTML = state.players.map(p => `
+    <div class="player-item">
+      <div class="player-dot"></div>
+      ${p.name}
+      ${p.isHost ? '<span class="host-badge">Host</span>' : ''}
+      ${p.isBot ? '<span style="color:var(--muted);font-size:0.75rem;margin-left:auto">🤖</span>' : ''}
+    </div>
+  `).join('');
+}
+
+// ==================== SOLO ====================
+function startSolo() {
+  const name = prompt('Enter your name:', 'Player') || 'Player';
+  state.playerName = name;
+  state.mode = 'solo';
+  state.rounds = 10;
+  state.timePerRound = 15;
+  state.players = [{ name, score: 0 }];
+  state.pairs = genPairs(state.rounds);
+  state.soloScore = 0;
+  startGamePlay();
+}
+
+// ==================== GAME FLOW ====================
+function startGame() {
+  if (state.players.length < 1) { showToast('Need at least 1 player!'); return; }
+  // Reset scores
+  state.players.forEach(p => p.score = 0);
+  startGamePlay();
+}
+
+function startGamePlay() {
+  state.currentRound = 0;
+  state.players.forEach(p => p.score = 0);
+  document.getElementById('total-rounds').textContent = state.rounds;
+  document.getElementById('solo-indicator').style.display = state.mode === 'solo' ? 'block' : 'none';
+  showScreen('screen-game');
+  nextRound();
+}
+
+function nextRound() {
+  if (state.currentRound >= state.rounds) {
+    endGame(); return;
+  }
+  state.answered = false;
+  const pair = state.pairs[state.currentRound];
+  state.currentRound++;
+
+  document.getElementById('current-round').textContent = state.currentRound;
+  renderScoreChips();
+
+  // Set movie data
+  document.getElementById('title-a').textContent = pair.a.title;
+  document.getElementById('title-b').textContent = pair.b.title;
+  document.getElementById('year-a').textContent = `${monthName(pair.a.month)} ${pair.a.year}`;
+  document.getElementById('year-b').textContent = `${monthName(pair.b.month)} ${pair.b.year}`;
+
+  // Poster placeholder with film emoji
+  document.getElementById('poster-a').textContent = '🎬';
+  document.getElementById('poster-b').textContent = '🎬';
+
+  // Reset card states
+  ['a','b'].forEach(s => {
+    const card = document.getElementById(`card-${s}`);
+    card.className = 'movie-card';
+    const overlay = document.getElementById(`overlay-${s}`);
+    overlay.className = 'result-overlay';
+    overlay.textContent = '';
+    document.getElementById(`year-${s}`).className = 'movie-year';
+  });
+
+  const banner = document.getElementById('result-banner');
+  banner.className = 'result-banner';
+  banner.textContent = '';
+
+  // Bot answers
+  scheduleBotAnswers(pair);
+
+  // Start timer
+  startTimer(state.timePerRound, () => {
+    if (!state.answered) {
+      timeUp(pair);
+    }
+  });
+}
+
+function monthName(m) {
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1] || '';
+}
+
+function renderScoreChips() {
+  const chips = document.getElementById('score-chips');
+  chips.innerHTML = state.players.map(p =>
+    `<div class="score-chip">${p.name.split(' ')[0]}: <span>${p.score}</span></div>`
+  ).join('');
+}
+
+function scheduleBotAnswers(pair) {
+  state.players.filter(p => p.isBot).forEach(bot => {
+    const delay = 2000 + Math.random() * 6000;
+    setTimeout(() => {
+      if (!state.answered) {
+        // Bots have 70% accuracy
+        const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
+        const botGuess = Math.random() < 0.70 ? correct : (correct === 'a' ? 'b' : 'a');
+        if (botGuess === correct) bot.score++;
+        renderScoreChips();
+      }
+    }, delay);
+  });
+}
+
+function guess(choice) {
+  if (state.answered) return;
+  const pair = state.pairs[state.currentRound - 1];
+  const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
+  const isCorrect = choice === correct;
+
+  state.answered = true;
+  clearInterval(state.timerInterval);
+
+  // Update human player score
+  const me = state.players.find(p => p.name === state.playerName);
+  if (me && isCorrect) me.score++;
+
+  // Visual feedback
+  const chosenCard = document.getElementById(`card-${choice}`);
+  const otherSide = choice === 'a' ? 'b' : 'a';
+
+  if (isCorrect) {
+    chosenCard.classList.add('correct');
+    document.getElementById(`overlay-${choice}`).classList.add('visible');
+    document.getElementById(`overlay-${choice}`).textContent = '✓';
+    showBanner(true, pair.a, pair.b, correct);
+  } else {
+    chosenCard.classList.add('wrong');
+    document.getElementById(`overlay-${choice}`).classList.add('visible');
+    document.getElementById(`overlay-${choice}`).textContent = '✗';
+    document.getElementById(`card-${correct}`).classList.add('reveal-correct');
+    document.getElementById(`overlay-${correct}`).classList.add('visible');
+    document.getElementById(`overlay-${correct}`).textContent = '✓';
+    showBanner(false, pair.a, pair.b, correct);
+  }
+
+  // Show dates
+  document.getElementById('year-a').classList.add('visible');
+  document.getElementById('year-b').classList.add('visible');
+
+  renderScoreChips();
+
+  setTimeout(() => nextRound(), 2200);
+}
+
+function timeUp(pair) {
+  state.answered = true;
+  const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
+  document.getElementById(`card-${correct}`).classList.add('reveal-correct');
+  document.getElementById(`overlay-${correct}`).classList.add('visible');
+  document.getElementById(`overlay-${correct}`).textContent = '✓';
+  document.getElementById('year-a').classList.add('visible');
+  document.getElementById('year-b').classList.add('visible');
+
+  const banner = document.getElementById('result-banner');
+  banner.className = 'result-banner wrong-banner visible';
+  banner.textContent = '⏱ Time\'s up!';
+
+  setTimeout(() => nextRound(), 2000);
+}
+
+function showBanner(correct, a, b, winner) {
+  const banner = document.getElementById('result-banner');
+  if (correct) {
+    banner.className = 'result-banner correct-banner visible';
+    const earlier = winner === 'a' ? a : b;
+    banner.textContent = `✓ Correct! ${earlier.title} (${earlier.year}) released first`;
+  } else {
+    banner.className = 'result-banner wrong-banner visible';
+    const earlier = winner === 'a' ? a : b;
+    banner.textContent = `✗ Wrong! ${earlier.title} (${earlier.year}) was earlier`;
+  }
+}
+
+// ==================== TIMER ====================
+function startTimer(seconds, onEnd) {
+  const circle = document.getElementById('timer-circle');
+  const numEl = document.getElementById('timer-num');
+  const r = 26;
+  const circumference = 2 * Math.PI * r; // ~163
+
+  state.timeLeft = seconds;
+  let elapsed = 0;
+
+  circle.classList.remove('danger');
+  numEl.textContent = seconds;
+  circle.style.strokeDashoffset = 0;
+
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    elapsed++;
+    state.timeLeft = seconds - elapsed;
+    numEl.textContent = state.timeLeft;
+
+    const offset = (elapsed / seconds) * circumference;
+    circle.style.strokeDashoffset = offset;
+
+    if (state.timeLeft <= 5) circle.classList.add('danger');
+
+    if (elapsed >= seconds) {
+      clearInterval(state.timerInterval);
+      onEnd();
+    }
+  }, 1000);
+}
+
+// ==================== END GAME ====================
+function endGame() {
+  clearInterval(state.timerInterval);
+  showScreen('screen-score');
+
+  const sorted = [...state.players].sort((a, b) => b.score - a.score);
+  const rankIcons = ['gold', 'silver', 'bronze'];
+
+  const list = document.getElementById('score-list');
+  list.innerHTML = sorted.map((p, i) => `
+    <div class="score-row">
+      <div class="score-rank ${rankIcons[i] || ''}">${i + 1}</div>
+      <div class="score-name">${p.name} ${p.name === state.playerName ? '(You)' : ''}</div>
+      <div class="score-pts">${p.score}<span style="font-size:0.7rem;color:var(--muted)">/${state.rounds}</span></div>
+    </div>
+  `).join('');
+}
+
+function playAgain() {
+  state.players.forEach(p => p.score = 0);
+  state.pairs = genPairs(state.rounds);
+  if (state.mode === 'solo') {
+    startGamePlay();
+  } else {
+    showScreen('screen-waiting');
+  }
+}
+
+// ==================== INIT ====================
+showScreen('screen-home');
+</script>
+</body>
+</html>
