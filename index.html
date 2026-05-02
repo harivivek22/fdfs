@@ -4,939 +4,675 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>First Day First Show</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #f5c518;
-    --gold-dim: #c49a10;
-    --red: #e63946;
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1c1c28;
-    --border: rgba(245,197,24,0.15);
-    --text: #f0e8d0;
-    --muted: #7a7060;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Rajdhani', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* BACKGROUND */
-  .bg-pattern {
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,197,24,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(230,57,70,0.06) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
-
-  /* HEADER */
-  header {
-    text-align: center;
-    padding: 2rem 1rem 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .title-italic {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-weight: 700;
-    font-size: clamp(1.4rem, 4vw, 2.2rem);
-    color: var(--gold);
-    letter-spacing: 0.02em;
-    display: block;
-    line-height: 1;
-  }
-  .title-main {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-size: clamp(2rem, 6vw, 3.5rem);
-    color: #fff;
-    letter-spacing: 0.04em;
-    display: block;
-    line-height: 1.1;
-  }
-  .subtitle {
-    font-size: 0.85rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 0.5rem;
-  }
-
-  /* SCREENS */
-  .screen { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; flex: 1; }
-  .screen.active { display: flex; }
-
-  /* HOME */
-  .home-actions { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 360px; margin-top: 2.5rem; }
-  .btn-primary {
-    background: var(--gold);
-    color: #0a0a0f;
-    border: none;
-    padding: 1rem 2rem;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  }
-  .btn-primary:hover { background: #ffd700; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.35); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    padding: 1rem 2rem;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  }
-  .btn-secondary:hover { background: rgba(245,197,24,0.08); }
-
-  .or-divider { text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.2em; }
-
-  /* LOBBY */
-  .lobby-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2rem;
-    width: 100%;
-    max-width: 460px;
-    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-  }
-  .lobby-card h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: var(--gold);
-    margin-bottom: 1.5rem;
-  }
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
-  .form-group input, .form-group select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.75rem 1rem;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
-  .form-group select option { background: var(--surface2); }
-  .btn-full { width: 100%; margin-top: 0.5rem; }
-
-  /* ROOM CODE DISPLAY */
-  .room-code-box {
-    background: var(--surface2);
-    border: 1px solid var(--gold);
-    padding: 1.5rem;
-    text-align: center;
-    margin: 1.5rem 0;
-  }
-  .room-code-label { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
-  .room-code { font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--gold); letter-spacing: 0.3em; }
-
-  /* WAITING ROOM */
-  .waiting-screen { width: 100%; max-width: 560px; }
-  .players-list { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; margin: 1.5rem 0; }
-  .players-list h3 { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
-  .player-item {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--border);
-    font-weight: 600; font-size: 1.05rem;
-  }
-  .player-item:last-child { border-bottom: none; }
-  .player-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
-  .host-badge {
-    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-    background: var(--gold); color: #000; padding: 2px 6px; margin-left: auto;
-  }
-
-  /* GAME SCREEN */
-  .game-top {
-    width: 100%; max-width: 900px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;
-  }
-  .progress-bar-wrap { flex: 1; height: 4px; background: var(--surface2); max-width: 300px; }
-  .progress-bar { height: 100%; background: var(--gold); transition: width 0.3s; }
-  .round-info { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
-  .score-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .score-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 0.3rem 0.8rem;
-    font-size: 0.85rem; font-weight: 600;
-  }
-  .score-chip span { color: var(--gold); }
-
-  .question-text {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    text-align: center;
-    color: var(--muted);
-    margin-bottom: 2rem;
-    letter-spacing: 0.02em;
-  }
-  .question-text strong { color: var(--text); }
-
-  /* MOVIE CARDS */
-  .movies-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 1rem;
-    width: 100%; max-width: 860px;
-    align-items: center;
-  }
-  .vs-badge {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: var(--muted);
-    text-align: center;
-    padding: 0.5rem;
-  }
-  .movie-card {
-    background: var(--surface);
-    border: 2px solid var(--border);
-    cursor: pointer;
-    transition: all 0.25s;
-    overflow: hidden;
-    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-    position: relative;
-  }
-  .movie-card:hover:not(.disabled) {
-    border-color: var(--gold);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(245,197,24,0.2);
-  }
-  .movie-card.disabled { cursor: default; }
-  .movie-card.correct { border-color: #22c55e; box-shadow: 0 0 30px rgba(34,197,94,0.3); }
-  .movie-card.wrong { border-color: var(--red); box-shadow: 0 0 30px rgba(230,57,70,0.3); }
-  .movie-card.reveal-correct { border-color: #22c55e; }
-
-  .movie-poster {
-    width: 100%; aspect-ratio: 2/3; object-fit: cover;
-    display: block;
-    background: var(--surface2);
-  }
-  .movie-poster-placeholder {
-    width: 100%; aspect-ratio: 2/3;
-    background: linear-gradient(135deg, var(--surface2) 0%, #1e1e2e 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3rem; color: var(--gold);
-  }
-  .movie-info { padding: 1rem; }
-  .movie-title { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 700; }
-  .movie-year {
-    font-size: 0.85rem; color: var(--gold); margin-top: 0.25rem; font-weight: 600;
-    opacity: 0; transition: opacity 0.4s;
-  }
-  .movie-year.visible { opacity: 1; }
-  .result-overlay {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3rem;
-    opacity: 0; transition: opacity 0.3s;
-    pointer-events: none;
-  }
-  .result-overlay.visible { opacity: 1; }
-  .correct .result-overlay { background: rgba(34,197,94,0.15); }
-  .wrong .result-overlay { background: rgba(230,57,70,0.15); }
-  .reveal-correct .result-overlay { background: rgba(34,197,94,0.1); }
-
-  /* RESULT BANNER */
-  .result-banner {
-    margin-top: 1.5rem;
-    padding: 1rem 2rem;
-    text-align: center;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0; transition: opacity 0.3s;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  }
-  .result-banner.visible { opacity: 1; }
-  .result-banner.correct-banner { background: rgba(34,197,94,0.15); border: 1px solid #22c55e; color: #22c55e; }
-  .result-banner.wrong-banner { background: rgba(230,57,70,0.15); border: 1px solid var(--red); color: var(--red); }
-
-  /* SCOREBOARD */
-  .scoreboard {
-    width: 100%; max-width: 520px;
-    background: var(--surface); border: 1px solid var(--border);
-    padding: 2rem;
-    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-  }
-  .scoreboard h2 {
-    font-family: 'Playfair Display', serif; font-size: 2rem;
-    color: var(--gold); text-align: center; margin-bottom: 0.25rem;
-  }
-  .scoreboard-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2rem; }
-  .score-row {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0.9rem 0; border-bottom: 1px solid var(--border);
-  }
-  .score-rank { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--border); min-width: 2.5rem; }
-  .score-rank.gold { color: var(--gold); }
-  .score-rank.silver { color: #aaa; }
-  .score-rank.bronze { color: #cd7f32; }
-  .score-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
-  .score-pts { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); }
-
-  /* JOIN ROOM */
-  .join-card { width: 100%; max-width: 400px; }
-  .code-input {
-    text-align: center;
-    font-size: 2rem !important;
-    letter-spacing: 0.4em !important;
-    font-family: 'Playfair Display', serif !important;
-    text-transform: uppercase;
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    background: var(--surface2); border: 1px solid var(--gold);
-    padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 600;
-    letter-spacing: 0.05em; z-index: 999;
-    opacity: 0; transition: opacity 0.3s;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-    white-space: nowrap;
-  }
-  .toast.visible { opacity: 1; }
-
-  /* TIMER */
-  .timer-ring { position: relative; width: 60px; height: 60px; }
-  .timer-ring svg { transform: rotate(-90deg); }
-  .timer-ring circle { fill: none; stroke-width: 4; }
-  .timer-ring .bg { stroke: var(--surface2); }
-  .timer-ring .fg { stroke: var(--gold); stroke-dasharray: 163; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
-  .timer-ring .fg.danger { stroke: var(--red); }
-  .timer-num {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700;
-  }
-
-  .back-btn {
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; letter-spacing: 0.1em;
-    text-transform: uppercase; padding: 0.5rem; margin-top: 1rem;
-    transition: color 0.2s;
-  }
-  .back-btn:hover { color: var(--text); }
-
-  .waiting-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-
-  /* Solo play badge */
-  .solo-badge {
-    background: rgba(245,197,24,0.1); border: 1px solid var(--border);
-    padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--muted);
-    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1rem;
-  }
-
-  @media (max-width: 600px) {
-    .movies-grid { grid-template-columns: 1fr; }
-    .vs-badge { display: none; }
-    .game-top { justify-content: center; }
-  }
+:root{--gold:#f5c518;--red:#e63946;--bg:#0a0a0f;--surface:#12121a;--surface2:#1c1c28;--border:rgba(245,197,24,.15);--text:#f0e8d0;--muted:#7a7060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.bg-fx{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(245,197,24,.08) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 100% 100%,rgba(230,57,70,.06) 0%,transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+header{text-align:center;padding:1.5rem 1rem 1rem;border-bottom:1px solid var(--border)}
+.ti{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(1.2rem,3.5vw,2rem);color:var(--gold);display:block;line-height:1}
+.tm{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.8rem,5vw,3rem);color:#fff;display:block;line-height:1.1}
+.ts{font-size:.78rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:.4rem}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;flex:1}
+.screen.active{display:flex}
+.btn{border:none;padding:.9rem 2rem;font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));width:100%}
+.bg{background:var(--gold);color:#0a0a0f}.bg:hover{background:#ffd700;transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,197,24,.35)}.bg:disabled{background:var(--muted);color:#333;cursor:not-allowed;transform:none;box-shadow:none}
+.bo{background:transparent;color:var(--gold);border:1px solid var(--gold)}.bo:hover{background:rgba(245,197,24,.08)}
+.card{background:var(--surface);border:1px solid var(--border);padding:2rem;width:100%;max-width:440px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.card h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);margin-bottom:1.4rem}
+.fg{display:flex;flex-direction:column;gap:1rem}
+.fgrp label{display:block;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.fgrp input,.fgrp select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.7rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;transition:border-color .2s}
+.fgrp input:focus,.fgrp select:focus{border-color:var(--gold)}
+.fgrp select option{background:var(--surface2)}
+.div{text-align:center;color:var(--muted);font-size:.8rem;letter-spacing:.2em}
+.back{background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.83rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem;margin-top:.8rem;transition:color .2s}
+.back:hover{color:var(--text)}
+.codebox{background:var(--surface2);border:1px solid var(--gold);padding:1.2rem;text-align:center;margin:1.2rem 0;cursor:pointer}
+.codelbl{font-size:.68rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.codeval{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--gold);letter-spacing:.4em}
+.codehint{font-size:.68rem;color:var(--muted);margin-top:.3rem}
+.wwrap{width:100%;max-width:520px}
+.pbox{background:var(--surface);border:1px solid var(--border);padding:1.4rem;margin:1.2rem 0}
+.pbox h3{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+.pitem{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--border);font-weight:600;font-size:1rem}
+.pitem:last-child{border-bottom:none}
+.pdot{width:9px;height:9px;border-radius:50%;background:#22c55e;flex-shrink:0}
+.hbadge{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#000;padding:2px 6px;margin-left:auto}
+.ybadge{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:var(--surface2);color:var(--muted);border:1px solid var(--border);padding:2px 6px;margin-left:auto}
+.wcfg{font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-align:center;margin-bottom:.8rem}
+.wact{display:flex;gap:.8rem;flex-wrap:wrap}.wact .btn{flex:1;min-width:120px}
+.gtop{width:100%;max-width:860px;display:flex;align-items:center;justify-content:space-between;padding:0 .5rem;margin-bottom:1.2rem;flex-wrap:wrap;gap:.5rem}
+.rinfo{font-size:.76rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.chip{background:var(--surface2);border:1px solid var(--border);padding:.22rem .65rem;font-size:.8rem;font-weight:600;white-space:nowrap}
+.chip span{color:var(--gold)}.chip.me{border-color:var(--gold)}
+.qtxt{font-family:'Playfair Display',serif;font-size:clamp(.95rem,2vw,1.2rem);text-align:center;color:var(--muted);margin-bottom:1.4rem}
+.qtxt strong{color:var(--text)}
+.mgrid{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;width:100%;max-width:820px;align-items:center}
+.vsbadge{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--muted);text-align:center}
+.mc{background:var(--surface);border:2px solid var(--border);cursor:pointer;transition:all .22s;overflow:hidden;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));position:relative}
+.mc:hover:not(.dis){border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 32px rgba(245,197,24,.2)}
+.mc.dis{cursor:default}
+.mc.correct{border-color:#22c55e;box-shadow:0 0 28px rgba(34,197,94,.3)}
+.mc.wrong{border-color:var(--red);box-shadow:0 0 28px rgba(230,57,70,.3)}
+.mc.rcorrect{border-color:#22c55e}
+.mph{width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,var(--surface2) 0%,#1a1a2a 100%);display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,5vw,3.5rem)}
+.rov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;opacity:0;transition:opacity .3s;pointer-events:none}
+.rov.v{opacity:1}
+.mc.correct .rov{background:rgba(34,197,94,.15)}.mc.wrong .rov{background:rgba(230,57,70,.15)}.mc.rcorrect .rov{background:rgba(34,197,94,.1)}
+.minfo{padding:.9rem}
+.mtitle{font-family:'Playfair Display',serif;font-size:clamp(.9rem,2.2vw,1.2rem);font-weight:700}
+.myear{font-size:.8rem;color:var(--gold);margin-top:.2rem;font-weight:600;opacity:0;transition:opacity .4s}
+.myear.v{opacity:1}
+.banner{margin-top:1.2rem;padding:.85rem 1.5rem;text-align:center;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .3s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));max-width:820px;width:100%}
+.banner.v{opacity:1}.banner.ok{background:rgba(34,197,94,.12);border:1px solid #22c55e;color:#22c55e}.banner.no{background:rgba(230,57,70,.12);border:1px solid var(--red);color:var(--red)}
+.live{margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:820px;width:100%}
+.lchip{font-size:.73rem;padding:.2rem .55rem;background:var(--surface2);border:1px solid var(--border);animation:popin .2s ease}
+@keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.tring{position:relative;width:56px;height:56px}
+.tring svg{transform:rotate(-90deg)}
+.tring circle{fill:none;stroke-width:4}
+.tbg{stroke:var(--surface2)}.tfg{stroke:var(--gold);stroke-dasharray:151;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s}
+.tfg.danger{stroke:var(--red)}
+.tnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+.sb{width:100%;max-width:480px;background:var(--surface);border:1px solid var(--border);padding:2rem;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.sb h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);text-align:center;margin-bottom:.2rem}
+.sbsub{text-align:center;color:var(--muted);font-size:.73rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:1.8rem}
+.sbrow{display:flex;align-items:center;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--border)}
+.sbrank{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--border);min-width:2.4rem}
+.sbrank.g{color:var(--gold)}.sbrank.s{color:#aaa}.sbrank.b{color:#cd7f32}
+.sbname{flex:1;font-size:1.05rem;font-weight:600}
+.sbpts{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold)}
+.sbact{display:flex;gap:.8rem;margin-top:1.4rem;flex-wrap:wrap}.sbact .btn{flex:1;min-width:120px}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--gold);padding:.65rem 1.4rem;font-size:.86rem;font-weight:600;letter-spacing:.05em;z-index:999;opacity:0;transition:opacity .3s;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));white-space:nowrap}
+.toast.v{opacity:1}
+.notice{background:rgba(245,197,24,.06);border:1px solid var(--border);padding:1rem 1.2rem;font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;max-width:440px;width:100%}
+.notice a{color:var(--gold);text-decoration:none}.notice code{background:var(--surface2);padding:1px 5px;font-size:.76rem;color:var(--text)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:.4rem}
+@keyframes sp{to{transform:rotate(360deg)}}
+.step-block{background:var(--surface);border:1px solid var(--border);padding:1.2rem 1.4rem;font-size:.82rem;line-height:1.9;max-width:440px;width:100%;margin-bottom:1rem}
+.step-block h3{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.step-block code{background:var(--surface2);color:var(--text);padding:1px 6px;font-size:.8rem}
+@media(max-width:580px){.mgrid{grid-template-columns:1fr}.vsbadge{display:none}.gtop{justify-content:center}}
 </style>
 </head>
 <body>
-<div class="bg-pattern"></div>
+<div class="bg-fx"></div>
 <div class="app">
-  <header>
-    <span class="title-italic">First Day</span>
-    <span class="title-main">First Show</span>
-    <p class="subtitle">The Ultimate Telugu Release Date Challenge</p>
-  </header>
+<header>
+  <span class="ti">First Day</span>
+  <span class="tm">First Show</span>
+  <p class="ts">The Ultimate Telugu Release Date Challenge</p>
+</header>
 
-  <!-- HOME -->
-  <div class="screen active" id="screen-home">
-    <div class="home-actions">
-      <button class="btn-primary" onclick="showScreen('screen-create')">🎬 Create Room</button>
-      <div class="or-divider">— or —</div>
-      <button class="btn-secondary" onclick="showScreen('screen-join')">🔑 Join Room</button>
-      <div class="or-divider">— or —</div>
-      <button class="btn-secondary" onclick="startSolo()">⚡ Play Solo</button>
-    </div>
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div id="fb-notice" class="notice" style="display:none">
+    ⚠️ <strong>Firebase not set up yet</strong> — rooms won't sync across devices.<br>
+    See setup instructions below, or play <strong>Solo</strong> for now.
   </div>
+  <div class="fg" style="width:100%;max-width:340px;margin-top:1rem">
+    <button class="btn bg" id="btn-create">🎬 Create Room</button>
+    <div class="div">— or —</div>
+    <button class="btn bo" id="btn-join">🔑 Join Room</button>
+    <div class="div">— or —</div>
+    <button class="btn bo" onclick="startSolo()">⚡ Play Solo</button>
+    <button class="btn bo" id="btn-setup" onclick="showScreen('s-setup')" style="font-size:.8rem;padding:.6rem">⚙ Firebase Setup Guide</button>
+  </div>
+</div>
 
-  <!-- CREATE ROOM -->
-  <div class="screen" id="screen-create">
-    <div class="lobby-card">
-      <h2>Create Room</h2>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="host-name" placeholder="Enter your name" maxlength="20">
-      </div>
-      <div class="form-group">
-        <label>Number of Rounds</label>
-        <select id="rounds-count">
+<!-- SETUP GUIDE -->
+<div class="screen" id="s-setup">
+  <div class="step-block">
+    <h3>Firebase Setup — One Time Only</h3>
+    <b>Step 1.</b> Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--gold)">console.firebase.google.com</a><br>
+    <b>Step 2.</b> Click <b>Add project</b> → name it anything → Continue<br>
+    <b>Step 3.</b> In your project → click <b>Web</b> icon (&lt;/&gt;) → register app<br>
+    <b>Step 4.</b> Copy the <code>firebaseConfig</code> object shown<br>
+    <b>Step 5.</b> In the left menu → <b>Build → Realtime Database</b><br>
+    <b>Step 6.</b> Click <b>Create Database</b> → choose <b>Test mode</b> → Enable<br>
+    <b>Step 7.</b> Open <code>index.html</code> in a text editor<br>
+    <b>Step 8.</b> Find <code>// PASTE YOUR FIREBASE CONFIG</code> near the top<br>
+    <b>Step 9.</b> Replace the placeholder values with your copied config<br>
+    <b>Step 10.</b> Save and re-upload to GitHub — done! 🎉
+  </div>
+  <button class="back" onclick="showScreen('s-home')">← Back</button>
+</div>
+
+<!-- CREATE -->
+<div class="screen" id="s-create">
+  <div class="card">
+    <h2>Create Room</h2>
+    <div class="fg">
+      <div class="fgrp"><label>Your Name</label><input id="c-name" maxlength="20" placeholder="Enter your name"></div>
+      <div class="fgrp"><label>Rounds</label>
+        <select id="c-rounds">
           <option value="5">5 Rounds</option>
           <option value="10" selected>10 Rounds</option>
           <option value="15">15 Rounds</option>
           <option value="20">20 Rounds</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Time per Round</label>
-        <select id="time-per-round">
+      <div class="fgrp"><label>Time per Round</label>
+        <select id="c-time">
           <option value="10">10 seconds</option>
           <option value="15" selected>15 seconds</option>
           <option value="20">20 seconds</option>
           <option value="30">30 seconds</option>
         </select>
       </div>
-      <button class="btn-primary btn-full" onclick="createRoom()">Create Room</button>
-      <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+      <button class="btn bg" id="btn-do-create">Create Room</button>
     </div>
-  </div>
-
-  <!-- JOIN ROOM -->
-  <div class="screen" id="screen-join">
-    <div class="lobby-card join-card">
-      <h2>Join Room</h2>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="join-name" placeholder="Enter your name" maxlength="20">
-      </div>
-      <div class="form-group">
-        <label>Room Code</label>
-        <input type="text" id="join-code" class="code-input" placeholder="XXXX" maxlength="4">
-      </div>
-      <button class="btn-primary btn-full" onclick="joinRoom()">Join Room</button>
-      <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
-    </div>
-  </div>
-
-  <!-- WAITING ROOM -->
-  <div class="screen" id="screen-waiting">
-    <div class="waiting-screen">
-      <div class="room-code-box">
-        <div class="room-code-label">Room Code — Share with friends</div>
-        <div class="room-code" id="display-room-code">----</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">Click to copy</div>
-      </div>
-      <div class="players-list">
-        <h3>Players <span id="player-count">(1)</span></h3>
-        <div id="players-list-items"></div>
-      </div>
-      <div style="font-size:0.8rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;text-align:center">
-        <span id="rounds-label">10</span> Rounds · <span id="time-label">15</span>s per Round
-      </div>
-      <div class="waiting-actions">
-        <button class="btn-primary" id="start-btn" onclick="startGame()">Start Game</button>
-        <button class="btn-secondary" onclick="addBotPlayer()">+ Add Bot</button>
-      </div>
-      <button class="back-btn" onclick="showScreen('screen-home')">← Leave Room</button>
-    </div>
-  </div>
-
-  <!-- GAME -->
-  <div class="screen" id="screen-game">
-    <div class="game-top">
-      <div class="round-info">Round <span id="current-round">1</span> / <span id="total-rounds">10</span></div>
-      <div class="timer-ring" id="timer-ring">
-        <svg width="60" height="60" viewBox="0 0 60 60">
-          <circle class="bg" cx="30" cy="30" r="26"/>
-          <circle class="fg" id="timer-circle" cx="30" cy="30" r="26" stroke-dashoffset="0"/>
-        </svg>
-        <div class="timer-num" id="timer-num">15</div>
-      </div>
-      <div class="score-chips" id="score-chips"></div>
-    </div>
-
-    <div class="question-text"><strong>Which movie released EARLIER?</strong></div>
-
-    <div class="movies-grid">
-      <div class="movie-card" id="card-a" onclick="guess('a')">
-        <div class="movie-poster-placeholder" id="poster-a">🎬</div>
-        <div class="result-overlay" id="overlay-a"></div>
-        <div class="movie-info">
-          <div class="movie-title" id="title-a">Movie A</div>
-          <div class="movie-year" id="year-a"></div>
-        </div>
-      </div>
-      <div class="vs-badge">vs</div>
-      <div class="movie-card" id="card-b" onclick="guess('b')">
-        <div class="movie-poster-placeholder" id="poster-b">🎬</div>
-        <div class="result-overlay" id="overlay-b"></div>
-        <div class="movie-info">
-          <div class="movie-title" id="title-b">Movie B</div>
-          <div class="movie-year" id="year-b"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="result-banner" id="result-banner"></div>
-    <div class="solo-badge" id="solo-indicator" style="display:none">Solo Mode</div>
-  </div>
-
-  <!-- SCOREBOARD -->
-  <div class="screen" id="screen-score">
-    <div class="scoreboard">
-      <h2>Results</h2>
-      <div class="scoreboard-subtitle">Game Over — Final Scores</div>
-      <div id="score-list"></div>
-      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
-        <button class="btn-primary" style="flex:1" onclick="playAgain()">Play Again</button>
-        <button class="btn-secondary" style="flex:1" onclick="showScreen('screen-home')">Home</button>
-      </div>
-    </div>
+    <button class="back" onclick="showScreen('s-home')">← Back</button>
   </div>
 </div>
 
+<!-- JOIN -->
+<div class="screen" id="s-join">
+  <div class="card">
+    <h2>Join Room</h2>
+    <div class="fg">
+      <div class="fgrp"><label>Your Name</label><input id="j-name" maxlength="20" placeholder="Enter your name"></div>
+      <div class="fgrp"><label>Room Code</label>
+        <input id="j-code" maxlength="4" placeholder="XXXX" style="text-align:center;font-size:1.8rem;letter-spacing:.4em;font-family:'Playfair Display',serif;text-transform:uppercase">
+      </div>
+      <button class="btn bg" id="btn-do-join">Join Room</button>
+    </div>
+    <button class="back" onclick="showScreen('s-home')">← Back</button>
+  </div>
+</div>
+
+<!-- WAITING -->
+<div class="screen" id="s-wait">
+  <div class="wwrap">
+    <div class="codebox" id="codebox">
+      <div class="codelbl">Room Code — Share with friends</div>
+      <div class="codeval" id="disp-code">----</div>
+      <div class="codehint">Tap to copy</div>
+    </div>
+    <div class="pbox">
+      <h3>Players <span id="pcount">(0)</span></h3>
+      <div id="plist"></div>
+    </div>
+    <div class="wcfg" id="wcfg"></div>
+    <div class="wact">
+      <button class="btn bg" id="btn-start" style="display:none" onclick="hostStart()">▶ Start Game</button>
+      <button class="btn bo" id="btn-bot" style="display:none" onclick="addBot()">+ Add Bot</button>
+    </div>
+    <div id="gwait" style="display:none;text-align:center;color:var(--muted);font-size:.88rem;margin-top:.8rem">
+      <span class="spin"></span>Waiting for host to start…
+    </div>
+    <button class="back" onclick="leaveRoom()">← Leave Room</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="s-game">
+  <div class="gtop">
+    <div class="rinfo">Round <span id="g-r">1</span>/<span id="g-t">10</span></div>
+    <div class="tring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="tbg" cx="28" cy="28" r="24"/>
+        <circle class="tfg" id="tcircle" cx="28" cy="28" r="24" stroke-dashoffset="0"/>
+      </svg>
+      <div class="tnum" id="tnum">15</div>
+    </div>
+    <div class="chips" id="gchips"></div>
+  </div>
+  <div class="qtxt"><strong>Which movie released EARLIER?</strong></div>
+  <div class="mgrid">
+    <div class="mc" id="mc-a" onclick="guess('a')">
+      <div class="mph" id="ph-a">🎬</div>
+      <div class="rov" id="ov-a"></div>
+      <div class="minfo"><div class="mtitle" id="mt-a">—</div><div class="myear" id="my-a"></div></div>
+    </div>
+    <div class="vsbadge">vs</div>
+    <div class="mc" id="mc-b" onclick="guess('b')">
+      <div class="mph" id="ph-b">🎬</div>
+      <div class="rov" id="ov-b"></div>
+      <div class="minfo"><div class="mtitle" id="mt-b">—</div><div class="myear" id="my-b"></div></div>
+    </div>
+  </div>
+  <div class="banner" id="gbanner"></div>
+  <div class="live" id="live"></div>
+</div>
+
+<!-- SCOREBOARD -->
+<div class="screen" id="s-score">
+  <div class="sb">
+    <h2>Results</h2>
+    <div class="sbsub">Game Over — Final Scores</div>
+    <div id="sblist"></div>
+    <div class="sbact">
+      <button class="btn bg" onclick="playAgain()">Play Again</button>
+      <button class="btn bo" onclick="goHome()">Home</button>
+    </div>
+  </div>
+</div>
+</div>
 <div class="toast" id="toast"></div>
 
-<script>
-// ==================== MOVIE DATA ====================
-const MOVIES = [
-  { title: "Magadheera", year: 2009, month: 7 },
-  { title: "Eega", year: 2012, month: 7 },
-  { title: "Baahubali: The Beginning", year: 2015, month: 7 },
-  { title: "Baahubali 2: The Conclusion", year: 2017, month: 4 },
-  { title: "Arjun Reddy", year: 2017, month: 8 },
-  { title: "Rangasthalam", year: 2018, month: 3 },
-  { title: "Geetha Govindam", year: 2018, month: 8 },
-  { title: "Maharshi", year: 2019, month: 5 },
-  { title: "Jersey", year: 2019, month: 4 },
-  { title: "Sarileru Neekevvaru", year: 2020, month: 1 },
-  { title: "Ala Vaikunthapurramuloo", year: 2020, month: 1 },
-  { title: "Vakeel Saab", year: 2021, month: 4 },
-  { title: "Pushpa: The Rise", year: 2021, month: 12 },
-  { title: "RRR", year: 2022, month: 3 },
-  { title: "Bheemla Nayak", year: 2022, month: 2 },
-  { title: "Vikram Vedha", year: 2022, month: 9 },
-  { title: "Dasara", year: 2023, month: 3 },
-  { title: "Kisi Ka Bhai Kisi Ki Jaan", year: 2023, month: 4 },
-  { title: "Skanda", year: 2023, month: 9 },
-  { title: "Salaar", year: 2023, month: 12 },
-  { title: "Guntur Kaaram", year: 2024, month: 1 },
-  { title: "HanuMan", year: 2024, month: 1 },
-  { title: "Tillu Square", year: 2024, month: 3 },
-  { title: "Devara", year: 2024, month: 9 },
-  { title: "Pushpa 2: The Rule", year: 2024, month: 12 },
-  { title: "Saindhav", year: 2024, month: 1 },
-  { title: "Eagle", year: 2024, month: 1 },
-  { title: "Bhimaa", year: 2024, month: 3 },
-  { title: "Double iSmart", year: 2024, month: 8 },
-  { title: "Saripodhaa Sanivaaram", year: 2024, month: 8 },
-  { title: "Akhanda", year: 2021, month: 12 },
-  { title: "Manamey", year: 2024, month: 6 },
-  { title: "Karthikeya 2", year: 2022, month: 8 },
-  { title: "Bimbisara", year: 2022, month: 8 },
-  { title: "Waltair Veerayya", year: 2023, month: 1 },
-  { title: "Veera Simha Reddy", year: 2023, month: 1 },
-  { title: "Nannaku Prematho", year: 2016, month: 1 },
-  { title: "Janatha Garage", year: 2016, month: 9 },
-  { title: "Fidaa", year: 2017, month: 7 },
-  { title: "Agnyaathavaasi", year: 2018, month: 1 },
-  { title: "F2: Fun and Frustration", year: 2019, month: 1 },
-  { title: "Bro Daddy", year: 2022, month: 1 },
-  { title: "Uppena", year: 2021, month: 2 },
-  { title: "Sita Ramam", year: 2022, month: 8 },
-  { title: "Hridayam", year: 2022, month: 1 },
-  { title: "DJ Tillu", year: 2022, month: 2 },
-  { title: "Virupaksha", year: 2023, month: 5 },
-  { title: "Bhola Shankar", year: 2023, month: 8 },
-  { title: "Tiger Nageswara Rao", year: 2023, month: 10 },
-  { title: "Naa Saami Ranga", year: 2024, month: 1 },
-];
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, update, onValue, remove }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ==================== STATE ====================
-let state = {
-  mode: 'solo', // 'solo' | 'host' | 'guest'
-  roomCode: '',
-  playerName: '',
-  players: [], // [{name, score, isHost}]
-  rounds: 10,
-  timePerRound: 15,
-  currentRound: 0,
-  pairs: [],
-  answered: false,
-  timerInterval: null,
-  timeLeft: 15,
-  soloScore: 0,
+// ╔══════════════════════════════════════════════════════╗
+// ║  PASTE YOUR FIREBASE CONFIG HERE                     ║
+// ║  Get it from console.firebase.google.com             ║
+// ╚══════════════════════════════════════════════════════╝
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  databaseURL: "https://PASTE_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "PASTE_PROJECT",
+  storageBucket: "PASTE_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId: "PASTE_APP_ID"
 };
 
-const BOTS = ["Prabhas Bot", "Allu Arjun Bot", "Mahesh Bot", "Jr NTR Bot", "Vijay Devarakonda Bot"];
-let botIdx = 0;
-
-// ==================== UTILS ====================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+try {
+  if (firebaseConfig.apiKey === "PASTE_API_KEY") throw new Error("not configured");
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  window._fb = { db, ref, set, get, update, onValue, remove };
+  document.dispatchEvent(new Event('fb-ready'));
+} catch(e) {
+  document.dispatchEvent(new Event('fb-error'));
 }
+</script>
 
-function showToast(msg, duration = 2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('visible');
-  setTimeout(() => t.classList.remove('visible'), duration);
-}
+<script>
+// ══════ MOVIES ══════
+const MOVIES = [
+  {t:"Magadheera",y:2009,m:7},{t:"Eega",y:2012,m:7},
+  {t:"Baahubali: The Beginning",y:2015,m:7},{t:"Baahubali 2: The Conclusion",y:2017,m:4},
+  {t:"Arjun Reddy",y:2017,m:8},{t:"Rangasthalam",y:2018,m:3},
+  {t:"Geetha Govindam",y:2018,m:8},{t:"Maharshi",y:2019,m:5},
+  {t:"Jersey",y:2019,m:4},{t:"Sarileru Neekevvaru",y:2020,m:1},
+  {t:"Ala Vaikunthapurramuloo",y:2020,m:1},{t:"Vakeel Saab",y:2021,m:4},
+  {t:"Pushpa: The Rise",y:2021,m:12},{t:"RRR",y:2022,m:3},
+  {t:"Bheemla Nayak",y:2022,m:2},{t:"Karthikeya 2",y:2022,m:8},
+  {t:"Sita Ramam",y:2022,m:8},{t:"DJ Tillu",y:2022,m:2},
+  {t:"Dasara",y:2023,m:3},{t:"Waltair Veerayya",y:2023,m:1},
+  {t:"Veera Simha Reddy",y:2023,m:1},{t:"Skanda",y:2023,m:9},
+  {t:"Salaar",y:2023,m:12},{t:"Virupaksha",y:2023,m:5},
+  {t:"Tiger Nageswara Rao",y:2023,m:10},{t:"Guntur Kaaram",y:2024,m:1},
+  {t:"HanuMan",y:2024,m:1},{t:"Tillu Square",y:2024,m:3},
+  {t:"Devara",y:2024,m:9},{t:"Pushpa 2: The Rule",y:2024,m:12},
+  {t:"Manamey",y:2024,m:6},{t:"Saripodhaa Sanivaaram",y:2024,m:8},
+  {t:"Double iSmart",y:2024,m:8},{t:"Bhimaa",y:2024,m:3},
+  {t:"Akhanda",y:2021,m:12},{t:"Uppena",y:2021,m:2},
+  {t:"Bimbisara",y:2022,m:8},{t:"Nannaku Prematho",y:2016,m:1},
+  {t:"Janatha Garage",y:2016,m:9},{t:"Fidaa",y:2017,m:7},
+  {t:"Agnyaathavaasi",y:2018,m:1},{t:"F2: Fun and Frustration",y:2019,m:1},
+  {t:"Saindhav",y:2024,m:1},{t:"Eagle",y:2024,m:1},
+  {t:"Naa Saami Ranga",y:2024,m:1},{t:"Bhola Shankar",y:2023,m:8},
+  {t:"Hridayam",y:2022,m:1},{t:"Bro Daddy",y:2022,m:1},
+];
+const BOTS = ["Prabhas🤖","Allu Arjun🤖","Jr NTR🤖","Mahesh🤖","Vijay🤖"];
 
-function genCode() {
-  return Math.random().toString(36).substring(2, 6).toUpperCase();
-}
+// ══════ STATE ══════
+let S = {
+  fb: false, mode:'solo',
+  myName:'', myPid:'', roomCode:'', isHost:false,
+  players:{}, rounds:10, timeSec:15, pairs:[], round:0,
+  answered:false, timerIv:null, listeners:[], botIdx:0,
+};
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+// ══════ FIREBASE WRAPPERS ══════
+const fb  = () => window._fb;
+const R   = (p) => fb().ref(fb().db, p);
+const FBS = (p,v) => fb().set(R(p), v);
+const FBG = (p)   => fb().get(R(p));
+const FBU = (p,v) => fb().update(R(p), v);
+const FBOn = (p, cb) => {
+  const off = fb().onValue(R(p), cb);
+  S.listeners.push(off);
+  return off;
+};
+const FBOff = () => { S.listeners.forEach(f=>{ try{f();}catch(e){} }); S.listeners=[]; };
+const FBRm  = (p) => fb().remove(R(p));
+
+// ══════ UTILS ══════
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function toast(msg,ms=2800){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('v'); setTimeout(()=>t.classList.remove('v'),ms); }
+function genCode(){ return Math.random().toString(36).substring(2,6).toUpperCase(); }
+function genPid() { return Math.random().toString(36).substring(2,12); }
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+function buildPairs(n){
+  const pool=shuffle(MOVIES); const pairs=[];
+  for(let i=0; pairs.length<n && i+1<pool.length; i+=2){
+    const a=pool[i],b=pool[i+1];
+    if(a.y===b.y&&a.m===b.m) continue;
+    pairs.push({a:{t:a.t,y:a.y,m:a.m},b:{t:b.t,y:b.y,m:b.m}});
   }
-  return a;
+  return pairs;
+}
+function mdate(m){ return m.y*100+m.m; }
+function mname(n){ return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][n-1]||''; }
+
+// ══════ FIREBASE READY / ERROR ══════
+document.addEventListener('fb-ready', ()=>{
+  S.fb=true;
+  document.getElementById('btn-create').onclick = ()=>showScreen('s-create');
+  document.getElementById('btn-join').onclick   = ()=>showScreen('s-join');
+  document.getElementById('btn-do-create').onclick = createRoom;
+  document.getElementById('btn-do-join').onclick   = joinRoom;
+});
+document.addEventListener('fb-error', ()=>{
+  document.getElementById('fb-notice').style.display='block';
+  const bc=document.getElementById('btn-create'), bj=document.getElementById('btn-join');
+  bc.textContent='🎬 Create Room (needs Firebase)'; bc.classList.add('bo'); bc.classList.remove('bg');
+  bj.textContent='🔑 Join Room (needs Firebase)';
+  bc.onclick=()=>showScreen('s-setup'); bj.onclick=()=>showScreen('s-setup');
+});
+
+// ══════ CREATE ROOM ══════
+async function createRoom(){
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){toast('Enter your name!');return;}
+  S.myName=name; S.rounds=+document.getElementById('c-rounds').value;
+  S.timeSec=+document.getElementById('c-time').value;
+  S.roomCode=genCode(); S.myPid=genPid(); S.isHost=true; S.mode='host';
+  S.pairs=buildPairs(S.rounds);
+  const btn=document.getElementById('btn-do-create');
+  btn.disabled=true; btn.textContent='Creating…';
+  try{
+    await FBS(`rooms/${S.roomCode}`,{
+      host:S.myPid, rounds:S.rounds, timeSec:S.timeSec,
+      status:'waiting', pairs:S.pairs, round:0
+    });
+    await FBS(`rooms/${S.roomCode}/players/${S.myPid}`,{name,score:0,isBot:false});
+    enterWaiting();
+  }catch(e){ toast('Error creating room'); btn.disabled=false; btn.textContent='Create Room'; }
 }
 
-function genPairs(count) {
-  const pool = shuffle(MOVIES);
-  const pairs = [];
-  for (let i = 0; i < count * 2 && i + 1 < pool.length; i += 2) {
-    const a = pool[i], b = pool[i + 1];
-    if (a.year === b.year && a.month === b.month) {
-      i--; continue; // skip same release
-    }
-    pairs.push({ a, b });
-  }
-  return pairs.slice(0, count);
+// ══════ JOIN ROOM ══════
+async function joinRoom(){
+  const name=document.getElementById('j-name').value.trim();
+  const code=document.getElementById('j-code').value.trim().toUpperCase();
+  if(!name){toast('Enter your name!');return;}
+  if(code.length!==4){toast('Enter 4-letter code!');return;}
+  const btn=document.getElementById('btn-do-join');
+  btn.disabled=true; btn.textContent='Joining…';
+  try{
+    const snap=await FBG(`rooms/${code}`);
+    if(!snap.exists()){toast('Room not found!');btn.disabled=false;btn.textContent='Join Room';return;}
+    const room=snap.val();
+    if(room.status!=='waiting'){toast('Game already started!');btn.disabled=false;btn.textContent='Join Room';return;}
+    S.myName=name; S.roomCode=code; S.myPid=genPid();
+    S.isHost=false; S.mode='guest';
+    S.rounds=room.rounds; S.timeSec=room.timeSec; S.pairs=room.pairs;
+    await FBS(`rooms/${code}/players/${S.myPid}`,{name,score:0,isBot:false});
+    enterWaiting();
+  }catch(e){ toast('Error joining room'); btn.disabled=false; btn.textContent='Join Room'; }
 }
 
-function movieDate(m) { return m.year * 100 + m.month; }
-
-// ==================== ROOM LOGIC ====================
-function createRoom() {
-  const name = document.getElementById('host-name').value.trim();
-  if (!name) { showToast('Enter your name!'); return; }
-  state.playerName = name;
-  state.rounds = parseInt(document.getElementById('rounds-count').value);
-  state.timePerRound = parseInt(document.getElementById('time-per-round').value);
-  state.roomCode = genCode();
-  state.mode = 'host';
-  state.players = [{ name, score: 0, isHost: true }];
-  state.pairs = genPairs(state.rounds);
-
-  document.getElementById('display-room-code').textContent = state.roomCode;
-  document.getElementById('rounds-label').textContent = state.rounds;
-  document.getElementById('time-label').textContent = state.timePerRound;
-  renderPlayers();
-  showScreen('screen-waiting');
-
-  // Click to copy
-  document.getElementById('display-room-code').onclick = () => {
-    navigator.clipboard.writeText(state.roomCode).then(() => showToast('Room code copied!'));
-  };
-}
-
-function joinRoom() {
-  const name = document.getElementById('join-name').value.trim();
-  const code = document.getElementById('join-code').value.trim().toUpperCase();
-  if (!name) { showToast('Enter your name!'); return; }
-  if (code.length !== 4) { showToast('Enter a 4-letter room code!'); return; }
-
-  // Simulate joining - in a real app this would connect to a server
-  // For demo: if code matches current room, join it; otherwise create a simulated room
-  state.playerName = name;
-  state.mode = 'guest';
-
-  if (state.roomCode === code && state.players.length > 0) {
-    // Join existing room
-    state.players.push({ name, score: 0, isHost: false });
+// ══════ WAITING ROOM ══════
+function enterWaiting(){
+  showScreen('s-wait');
+  document.getElementById('disp-code').textContent=S.roomCode;
+  document.getElementById('wcfg').textContent=`${S.rounds} Rounds · ${S.timeSec}s per Round`;
+  document.getElementById('codebox').onclick=()=>{ navigator.clipboard.writeText(S.roomCode).then(()=>toast('Code copied! 📋')); };
+  if(S.isHost){
+    document.getElementById('btn-start').style.display='block';
+    document.getElementById('btn-bot').style.display='block';
+    document.getElementById('gwait').style.display='none';
   } else {
-    // Simulate a room
-    state.roomCode = code;
-    state.rounds = 10;
-    state.timePerRound = 15;
-    state.pairs = genPairs(state.rounds);
-    state.players = [
-      { name: 'Host Player', score: 0, isHost: true },
-      { name, score: 0, isHost: false },
-    ];
+    document.getElementById('btn-start').style.display='none';
+    document.getElementById('btn-bot').style.display='none';
+    document.getElementById('gwait').style.display='block';
   }
-
-  document.getElementById('display-room-code').textContent = state.roomCode;
-  document.getElementById('rounds-label').textContent = state.rounds;
-  document.getElementById('time-label').textContent = state.timePerRound;
-  document.getElementById('start-btn').style.display = 'none'; // guests can't start
-  renderPlayers();
-  showScreen('screen-waiting');
-  showToast(`Joined room ${code}!`);
-}
-
-function addBotPlayer() {
-  const bot = BOTS[botIdx % BOTS.length];
-  botIdx++;
-  if (state.players.find(p => p.name === bot)) { addBotPlayer(); return; }
-  state.players.push({ name: bot, score: 0, isHost: false, isBot: true });
-  renderPlayers();
-  showToast(`${bot} joined!`);
-}
-
-function renderPlayers() {
-  document.getElementById('player-count').textContent = `(${state.players.length})`;
-  const list = document.getElementById('players-list-items');
-  list.innerHTML = state.players.map(p => `
-    <div class="player-item">
-      <div class="player-dot"></div>
-      ${p.name}
-      ${p.isHost ? '<span class="host-badge">Host</span>' : ''}
-      ${p.isBot ? '<span style="color:var(--muted);font-size:0.75rem;margin-left:auto">🤖</span>' : ''}
-    </div>
-  `).join('');
-}
-
-// ==================== SOLO ====================
-function startSolo() {
-  const name = prompt('Enter your name:', 'Player') || 'Player';
-  state.playerName = name;
-  state.mode = 'solo';
-  state.rounds = 10;
-  state.timePerRound = 15;
-  state.players = [{ name, score: 0 }];
-  state.pairs = genPairs(state.rounds);
-  state.soloScore = 0;
-  startGamePlay();
-}
-
-// ==================== GAME FLOW ====================
-function startGame() {
-  if (state.players.length < 1) { showToast('Need at least 1 player!'); return; }
-  // Reset scores
-  state.players.forEach(p => p.score = 0);
-  startGamePlay();
-}
-
-function startGamePlay() {
-  state.currentRound = 0;
-  state.players.forEach(p => p.score = 0);
-  document.getElementById('total-rounds').textContent = state.rounds;
-  document.getElementById('solo-indicator').style.display = state.mode === 'solo' ? 'block' : 'none';
-  showScreen('screen-game');
-  nextRound();
-}
-
-function nextRound() {
-  if (state.currentRound >= state.rounds) {
-    endGame(); return;
-  }
-  state.answered = false;
-  const pair = state.pairs[state.currentRound];
-  state.currentRound++;
-
-  document.getElementById('current-round').textContent = state.currentRound;
-  renderScoreChips();
-
-  // Set movie data
-  document.getElementById('title-a').textContent = pair.a.title;
-  document.getElementById('title-b').textContent = pair.b.title;
-  document.getElementById('year-a').textContent = `${monthName(pair.a.month)} ${pair.a.year}`;
-  document.getElementById('year-b').textContent = `${monthName(pair.b.month)} ${pair.b.year}`;
-
-  // Poster placeholder with film emoji
-  document.getElementById('poster-a').textContent = '🎬';
-  document.getElementById('poster-b').textContent = '🎬';
-
-  // Reset card states
-  ['a','b'].forEach(s => {
-    const card = document.getElementById(`card-${s}`);
-    card.className = 'movie-card';
-    const overlay = document.getElementById(`overlay-${s}`);
-    overlay.className = 'result-overlay';
-    overlay.textContent = '';
-    document.getElementById(`year-${s}`).className = 'movie-year';
+  // Listen players
+  FBOn(`rooms/${S.roomCode}/players`, snap=>{
+    S.players=snap.val()||{};
+    renderWaitPlayers();
   });
-
-  const banner = document.getElementById('result-banner');
-  banner.className = 'result-banner';
-  banner.textContent = '';
-
-  // Bot answers
-  scheduleBotAnswers(pair);
-
-  // Start timer
-  startTimer(state.timePerRound, () => {
-    if (!state.answered) {
-      timeUp(pair);
-    }
+  // Listen for game start
+  FBOn(`rooms/${S.roomCode}/status`, snap=>{
+    if(snap.val()==='playing'){ FBOff(); listenGame(); }
+    if(snap.val()==='ended')  { FBOff(); endGame(); }
   });
 }
 
-function monthName(m) {
-  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1] || '';
+async function addBot(){
+  const name=BOTS[S.botIdx%BOTS.length]; S.botIdx++;
+  await FBS(`rooms/${S.roomCode}/players/${genPid()}`,{name,score:0,isBot:true});
 }
 
-function renderScoreChips() {
-  const chips = document.getElementById('score-chips');
-  chips.innerHTML = state.players.map(p =>
-    `<div class="score-chip">${p.name.split(' ')[0]}: <span>${p.score}</span></div>`
+function renderWaitPlayers(){
+  const keys=Object.keys(S.players);
+  document.getElementById('pcount').textContent=`(${keys.length})`;
+  document.getElementById('plist').innerHTML=keys.map(pid=>{
+    const p=S.players[pid];
+    return `<div class="pitem"><div class="pdot"></div>${p.name}
+      ${pid===S.myPid&&S.isHost?'<span class="hbadge">Host</span>':''}
+      ${pid===S.myPid&&!S.isHost?'<span class="ybadge">You</span>':''}
+    </div>`;
+  }).join('');
+}
+
+// ══════ HOST STARTS ══════
+async function hostStart(){
+  if(Object.keys(S.players).length<1){toast('Need at least 1 player!');return;}
+  const up={};
+  Object.keys(S.players).forEach(pid=>{ up[`rooms/${S.roomCode}/players/${pid}/score`]=0; });
+  up[`rooms/${S.roomCode}/status`]='playing';
+  up[`rooms/${S.roomCode}/round`]=1;
+  up[`rooms/${S.roomCode}/roundAnswers`]=null;
+  await FBU('/',up);
+}
+
+// ══════ LISTEN GAME ══════
+function listenGame(){
+  FBG(`rooms/${S.roomCode}`).then(snap=>{
+    const r=snap.val();
+    S.pairs=r.pairs; S.rounds=r.rounds; S.timeSec=r.timeSec;
+    S.players=r.players||{}; S.round=r.round||1;
+    showRound(S.round);
+  });
+  FBOn(`rooms/${S.roomCode}/round`, snap=>{
+    const r=snap.val();
+    if(r&&r!==S.round){ S.round=r; r>S.rounds?endGame():showRound(r); }
+  });
+  FBOn(`rooms/${S.roomCode}/players`, snap=>{ S.players=snap.val()||{}; renderChips(); });
+  FBOn(`rooms/${S.roomCode}/roundAnswers`, snap=>{ renderLive(snap.val()||{}); });
+  FBOn(`rooms/${S.roomCode}/status`, snap=>{ if(snap.val()==='ended'){ FBOff(); endGame(); } });
+}
+
+// ══════ SHOW ROUND ══════
+function showRound(r){
+  showScreen('s-game');
+  S.answered=false; clearInterval(S.timerIv);
+  document.getElementById('live').innerHTML='';
+  const pair=S.pairs[r-1];
+  if(!pair){endGame();return;}
+  document.getElementById('g-r').textContent=r;
+  document.getElementById('g-t').textContent=S.rounds;
+  document.getElementById('mt-a').textContent=pair.a.t;
+  document.getElementById('mt-b').textContent=pair.b.t;
+  document.getElementById('my-a').textContent=`${mname(pair.a.m)} ${pair.a.y}`;
+  document.getElementById('my-b').textContent=`${mname(pair.b.m)} ${pair.b.y}`;
+  ['a','b'].forEach(s=>{
+    document.getElementById(`mc-${s}`).className='mc';
+    const ov=document.getElementById(`ov-${s}`); ov.className='rov'; ov.textContent='';
+    document.getElementById(`my-${s}`).className='myear';
+  });
+  const bn=document.getElementById('gbanner'); bn.className='banner'; bn.textContent='';
+  renderChips();
+  if(S.isHost) scheduleBots(pair,r);
+  startTimer(S.timeSec, ()=>{ if(!S.answered) timeUp(pair); });
+}
+
+// ══════ GUESS ══════
+async function guess(side){
+  if(S.answered) return;
+  if(S.mode==='solo'){ soloGuess(side); return; }
+  const pair=S.pairs[S.round-1];
+  const correct=mdate(pair.a)<mdate(pair.b)?'a':'b';
+  const ok=side===correct;
+  S.answered=true; clearInterval(S.timerIv);
+  const up={};
+  up[`rooms/${S.roomCode}/roundAnswers/${S.myPid}`]={name:S.myName,side,ok};
+  if(ok) up[`rooms/${S.roomCode}/players/${S.myPid}/score`]=(S.players[S.myPid]?.score||0)+1;
+  await FBU('/',up);
+  showResult(side,correct,pair,ok);
+  if(S.isHost) scheduleNext();
+}
+
+async function timeUp(pair){
+  S.answered=true;
+  const correct=mdate(pair.a)<mdate(pair.b)?'a':'b';
+  showResult(null,correct,pair,false,true);
+  if(S.isHost) scheduleNext();
+}
+
+function scheduleNext(){
+  setTimeout(async()=>{
+    const next=S.round+1;
+    const up={[`rooms/${S.roomCode}/round`]:next,[`rooms/${S.roomCode}/roundAnswers`]:null};
+    if(next>S.rounds) up[`rooms/${S.roomCode}/status`]='ended';
+    await FBU('/',up);
+  },2600);
+}
+
+// ══════ VISUAL ══════
+function showResult(side,correct,pair,ok,timedOut=false){
+  document.getElementById('my-a').classList.add('v');
+  document.getElementById('my-b').classList.add('v');
+  const e=correct==='a'?pair.a:pair.b;
+  if(timedOut){
+    setCard(correct,'rcorrect','✓');
+    setBanner(false,`⏱ Time's up! ${e.t} (${e.y}) was earlier`);
+    return;
+  }
+  if(ok){
+    setCard(side,'correct','✓');
+    setBanner(true,`✓ Correct! ${e.t} (${e.y}) released first`);
+  } else {
+    setCard(side,'wrong','✗');
+    setCard(correct,'rcorrect','✓');
+    setBanner(false,`✗ Wrong! ${e.t} (${e.y}) was earlier`);
+  }
+}
+function setCard(side,cls,icon){
+  document.getElementById(`mc-${side}`).classList.add(cls);
+  const ov=document.getElementById(`ov-${side}`); ov.classList.add('v'); ov.textContent=icon;
+}
+function setBanner(ok,msg){
+  const b=document.getElementById('gbanner');
+  b.className=`banner v ${ok?'ok':'no'}`; b.textContent=msg;
+}
+function renderLive(answers){
+  document.getElementById('live').innerHTML=Object.values(answers).map(a=>
+    `<div class="lchip">${a.name} ${a.ok?'✓':'✗'}</div>`).join('');
+}
+function renderChips(){
+  document.getElementById('gchips').innerHTML=Object.entries(S.players).map(([pid,p])=>
+    `<div class="chip${pid===S.myPid?' me':''}">${p.name.split(' ')[0].replace('🤖','')}: <span>${p.score}</span></div>`
   ).join('');
 }
 
-function scheduleBotAnswers(pair) {
-  state.players.filter(p => p.isBot).forEach(bot => {
-    const delay = 2000 + Math.random() * 6000;
-    setTimeout(() => {
-      if (!state.answered) {
-        // Bots have 70% accuracy
-        const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
-        const botGuess = Math.random() < 0.70 ? correct : (correct === 'a' ? 'b' : 'a');
-        if (botGuess === correct) bot.score++;
-        renderScoreChips();
-      }
-    }, delay);
+// ══════ BOTS ══════
+function scheduleBots(pair,round){
+  Object.entries(S.players).filter(([,p])=>p.isBot).forEach(([pid,p])=>{
+    setTimeout(async()=>{
+      if(S.round!==round) return;
+      const correct=mdate(pair.a)<mdate(pair.b)?'a':'b';
+      const side=Math.random()<0.72?correct:(correct==='a'?'b':'a');
+      const ok=side===correct;
+      const up={};
+      up[`rooms/${S.roomCode}/roundAnswers/${pid}`]={name:p.name,side,ok};
+      if(ok) up[`rooms/${S.roomCode}/players/${pid}/score`]=(S.players[pid]?.score||0)+1;
+      await FBU('/',up);
+    }, 1500+Math.random()*7000);
   });
 }
 
-function guess(choice) {
-  if (state.answered) return;
-  const pair = state.pairs[state.currentRound - 1];
-  const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
-  const isCorrect = choice === correct;
-
-  state.answered = true;
-  clearInterval(state.timerInterval);
-
-  // Update human player score
-  const me = state.players.find(p => p.name === state.playerName);
-  if (me && isCorrect) me.score++;
-
-  // Visual feedback
-  const chosenCard = document.getElementById(`card-${choice}`);
-  const otherSide = choice === 'a' ? 'b' : 'a';
-
-  if (isCorrect) {
-    chosenCard.classList.add('correct');
-    document.getElementById(`overlay-${choice}`).classList.add('visible');
-    document.getElementById(`overlay-${choice}`).textContent = '✓';
-    showBanner(true, pair.a, pair.b, correct);
-  } else {
-    chosenCard.classList.add('wrong');
-    document.getElementById(`overlay-${choice}`).classList.add('visible');
-    document.getElementById(`overlay-${choice}`).textContent = '✗';
-    document.getElementById(`card-${correct}`).classList.add('reveal-correct');
-    document.getElementById(`overlay-${correct}`).classList.add('visible');
-    document.getElementById(`overlay-${correct}`).textContent = '✓';
-    showBanner(false, pair.a, pair.b, correct);
-  }
-
-  // Show dates
-  document.getElementById('year-a').classList.add('visible');
-  document.getElementById('year-b').classList.add('visible');
-
-  renderScoreChips();
-
-  setTimeout(() => nextRound(), 2200);
+// ══════ TIMER ══════
+function startTimer(sec,onEnd){
+  const circ=document.getElementById('tcircle'), num=document.getElementById('tnum');
+  const C=2*Math.PI*24;
+  circ.classList.remove('danger'); circ.style.strokeDashoffset=0; num.textContent=sec;
+  let elapsed=0; clearInterval(S.timerIv);
+  S.timerIv=setInterval(()=>{
+    elapsed++; const left=sec-elapsed;
+    num.textContent=left; circ.style.strokeDashoffset=(elapsed/sec)*C;
+    if(left<=5) circ.classList.add('danger');
+    if(elapsed>=sec){ clearInterval(S.timerIv); onEnd(); }
+  },1000);
 }
 
-function timeUp(pair) {
-  state.answered = true;
-  const correct = movieDate(pair.a) < movieDate(pair.b) ? 'a' : 'b';
-  document.getElementById(`card-${correct}`).classList.add('reveal-correct');
-  document.getElementById(`overlay-${correct}`).classList.add('visible');
-  document.getElementById(`overlay-${correct}`).textContent = '✓';
-  document.getElementById('year-a').classList.add('visible');
-  document.getElementById('year-b').classList.add('visible');
+// ══════ SOLO ══════
+function startSolo(){
+  const name=prompt('Your name:','Player')||'Player';
+  S.myName=name; S.myPid=genPid(); S.mode='solo'; S.isHost=false;
+  S.rounds=10; S.timeSec=15; S.pairs=buildPairs(10);
+  S.players={[S.myPid]:{name,score:0,isBot:false}}; S.round=0;
+  showScreen('s-game'); soloNext();
+}
+function soloNext(){ S.round++; S.round>S.rounds?soloEnd():soloRound(S.round); }
+function soloRound(r){
+  S.answered=false; clearInterval(S.timerIv);
+  const pair=S.pairs[r-1];
+  document.getElementById('g-r').textContent=r;
+  document.getElementById('g-t').textContent=S.rounds;
+  document.getElementById('mt-a').textContent=pair.a.t;
+  document.getElementById('mt-b').textContent=pair.b.t;
+  document.getElementById('my-a').textContent=`${mname(pair.a.m)} ${pair.a.y}`;
+  document.getElementById('my-b').textContent=`${mname(pair.b.m)} ${pair.b.y}`;
+  ['a','b'].forEach(s=>{
+    document.getElementById(`mc-${s}`).className='mc';
+    const ov=document.getElementById(`ov-${s}`); ov.className='rov'; ov.textContent='';
+    document.getElementById(`my-${s}`).className='myear';
+  });
+  document.getElementById('gbanner').className='banner'; document.getElementById('gbanner').textContent='';
+  document.getElementById('live').innerHTML='';
+  renderChips();
+  startTimer(S.timeSec,()=>{ if(!S.answered){ S.answered=true; const c=mdate(pair.a)<mdate(pair.b)?'a':'b'; showResult(null,c,pair,false,true); setTimeout(soloNext,2000); }});
+}
+function soloGuess(side){
+  if(S.answered) return;
+  S.answered=true; clearInterval(S.timerIv);
+  const pair=S.pairs[S.round-1];
+  const correct=mdate(pair.a)<mdate(pair.b)?'a':'b';
+  const ok=side===correct;
+  if(ok) S.players[S.myPid].score++;
+  showResult(side,correct,pair,ok);
+  renderChips();
+  setTimeout(soloNext,2200);
+}
+function soloEnd(){ clearInterval(S.timerIv); renderScoreboard(); showScreen('s-score'); }
 
-  const banner = document.getElementById('result-banner');
-  banner.className = 'result-banner wrong-banner visible';
-  banner.textContent = '⏱ Time\'s up!';
-
-  setTimeout(() => nextRound(), 2000);
+// ══════ END / SCORE ══════
+function endGame(){ clearInterval(S.timerIv); FBOff(); renderScoreboard(); showScreen('s-score'); }
+function renderScoreboard(){
+  const sorted=Object.entries(S.players).map(([pid,p])=>({...p,pid})).sort((a,b)=>b.score-a.score);
+  const r=['g','s','b'];
+  document.getElementById('sblist').innerHTML=sorted.map((p,i)=>`
+    <div class="sbrow">
+      <div class="sbrank ${r[i]||''}">${i+1}</div>
+      <div class="sbname">${p.name}${p.pid===S.myPid?' <span style="color:var(--gold);font-size:.68rem">(You)</span>':''}</div>
+      <div class="sbpts">${p.score}<span style="font-size:.62rem;color:var(--muted)">/${S.rounds}</span></div>
+    </div>`).join('');
 }
 
-function showBanner(correct, a, b, winner) {
-  const banner = document.getElementById('result-banner');
-  if (correct) {
-    banner.className = 'result-banner correct-banner visible';
-    const earlier = winner === 'a' ? a : b;
-    banner.textContent = `✓ Correct! ${earlier.title} (${earlier.year}) released first`;
-  } else {
-    banner.className = 'result-banner wrong-banner visible';
-    const earlier = winner === 'a' ? a : b;
-    banner.textContent = `✗ Wrong! ${earlier.title} (${earlier.year}) was earlier`;
-  }
+// ══════ LEAVE / HOME / AGAIN ══════
+async function leaveRoom(){
+  FBOff(); clearInterval(S.timerIv);
+  try{ if(S.roomCode&&S.myPid) await FBRm(`rooms/${S.roomCode}/players/${S.myPid}`); }catch(e){}
+  goHome();
 }
-
-// ==================== TIMER ====================
-function startTimer(seconds, onEnd) {
-  const circle = document.getElementById('timer-circle');
-  const numEl = document.getElementById('timer-num');
-  const r = 26;
-  const circumference = 2 * Math.PI * r; // ~163
-
-  state.timeLeft = seconds;
-  let elapsed = 0;
-
-  circle.classList.remove('danger');
-  numEl.textContent = seconds;
-  circle.style.strokeDashoffset = 0;
-
-  clearInterval(state.timerInterval);
-  state.timerInterval = setInterval(() => {
-    elapsed++;
-    state.timeLeft = seconds - elapsed;
-    numEl.textContent = state.timeLeft;
-
-    const offset = (elapsed / seconds) * circumference;
-    circle.style.strokeDashoffset = offset;
-
-    if (state.timeLeft <= 5) circle.classList.add('danger');
-
-    if (elapsed >= seconds) {
-      clearInterval(state.timerInterval);
-      onEnd();
-    }
-  }, 1000);
+function goHome(){ FBOff(); clearInterval(S.timerIv); S.roomCode=''; S.players={}; S.round=0; showScreen('s-home'); }
+function playAgain(){
+  if(S.mode==='solo'){ S.players[S.myPid].score=0; S.pairs=buildPairs(S.rounds); S.round=0; showScreen('s-game'); soloNext(); }
+  else goHome();
 }
-
-// ==================== END GAME ====================
-function endGame() {
-  clearInterval(state.timerInterval);
-  showScreen('screen-score');
-
-  const sorted = [...state.players].sort((a, b) => b.score - a.score);
-  const rankIcons = ['gold', 'silver', 'bronze'];
-
-  const list = document.getElementById('score-list');
-  list.innerHTML = sorted.map((p, i) => `
-    <div class="score-row">
-      <div class="score-rank ${rankIcons[i] || ''}">${i + 1}</div>
-      <div class="score-name">${p.name} ${p.name === state.playerName ? '(You)' : ''}</div>
-      <div class="score-pts">${p.score}<span style="font-size:0.7rem;color:var(--muted)">/${state.rounds}</span></div>
-    </div>
-  `).join('');
-}
-
-function playAgain() {
-  state.players.forEach(p => p.score = 0);
-  state.pairs = genPairs(state.rounds);
-  if (state.mode === 'solo') {
-    startGamePlay();
-  } else {
-    showScreen('screen-waiting');
-  }
-}
-
-// ==================== INIT ====================
-showScreen('screen-home');
 </script>
 </body>
 </html>
